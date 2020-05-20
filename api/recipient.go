@@ -70,7 +70,7 @@ func (s *Server) getRecipient(rw http.ResponseWriter, req *http.Request) (errCod
 
 	recipient, err := service.GetRecipient(id)
 	if err != nil {
-		logrus.Errorf("Error while getting recipient", err)
+		logrus.Error("Error while getting recipient", err)
 		return http.StatusNotFound, err
 	}
 

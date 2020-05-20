@@ -130,6 +130,9 @@ func RemoveSilence(alert *model.Alert) error {
 			}
 
 			delResp, err := client.Do(delReq)
+			if err != nil {
+				return err
+			}
 			defer delResp.Body.Close()
 
 			res, err := ioutil.ReadAll(delResp.Body)
@@ -151,9 +154,8 @@ func GetState(alert *model.Alert, apiAlerts []*dispatch.APIAlert) (string, *disp
 		if string(a.Labels["alert_id"]) == alert.Id && string(a.Labels["environment"]) == alert.Environment {
 			if a.Status.State == types.AlertStateSuppressed {
 				return model.AlertStateSuppressed, a
-			} else {
-				return model.AlertStateActive, a
 			}
+			return model.AlertStateActive, a
 		}
 	}
 

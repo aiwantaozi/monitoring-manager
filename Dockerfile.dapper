@@ -1,27 +1,25 @@
-FROM ubuntu:16.04
+FROM golang:1.8.1-alpine
 
 ARG DAPPER_HOST_ARCH
 ENV HOST_ARCH=${DAPPER_HOST_ARCH} ARCH=${DAPPER_HOST_ARCH}
 
-RUN apt-get update && \
-    apt-get install -y gcc ca-certificates git wget curl vim less file && \
-    rm -f /bin/sh && ln -s /bin/bash /bin/sh
+RUN apk -U add  gcc musl-dev ca-certificates git wget curl vim less file docker bash
 
-RUN wget http://dev-tool.oss-cn-shenzhen.aliyuncs.com/git/tools.tar.gz -O /tmp/tools.tar.gz
+RUN mkdir -p /go/src/golang.org/x && \
+    cd /go/src/golang.org/x && git clone https://github.com/golang/tools && \
+    cd tools && \
+    git checkout release-branch.go1.8 && \
+    go install golang.org/x/tools/cmd/goimports && \
+    go get github.com/golang/lint/golint && \
+    go install golang.org/x/lint/golint
 
-ENV GOLANG_ARCH_amd64=amd64 GOLANG_ARCH_arm=armv6l GOLANG_ARCH=GOLANG_ARCH_${ARCH} \
-    GOPATH=/go PATH=/go/bin:/usr/local/go/bin:${PATH} SHELL=/bin/bash
+RUN rm -rf /go/src /go/pkg
 
-RUN wget -O - http://dev-tool.oss-cn-shenzhen.aliyuncs.com/golang/go1.8.1.linux-${!GOLANG_ARCH}.tar.gz | tar -xzf - -C /usr/local && \
-    go get -v github.com/rancher/trash && mkdir -p ${GOPATH}/src/golang.org/x/tools && cd ${GOPATH}/src/golang.org/x && tar -xzvf /tmp/tools.tar.gz && go get github.com/golang/lint/golint
+RUN if [ "${ARCH}" == "amd64" ]; then \
+        curl -sL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s v1.8.1; \
+    fi
 
-ENV DOCKER_URL_amd64=http://dev-tool.oss-cn-shenzhen.aliyuncs.com/docker/Linux/x86_64/docker-1.10.3 \
-    DOCKER_URL_arm=https://github.com/rancher/docker/releases/download/v1.10.3-ros1/docker-1.10.3_arm \
-    DOCKER_URL=DOCKER_URL_${ARCH}
-
-RUN wget -O - ${!DOCKER_URL} > /usr/bin/docker && chmod +x /usr/bin/docker
-
-
+ENV DAPPER_ENV REGISTRY REGISTRY_USER REGISTRY_PASSWORD REPO TAG DRONE_TAG SKIP_GO_MOD REPO_RENAME UI_DOWNLOAD_BASE_URL SKIP_GO_PACKAGE_RUNNER CLCOS_BASE_IMAGE TINI_URL TINI_VERSION
 ENV DAPPER_SOURCE /go/src/github.com/zionwu/monitoring-manager/
 ENV DAPPER_OUTPUT ./bin ./dist
 ENV DAPPER_DOCKER_SOCKET true

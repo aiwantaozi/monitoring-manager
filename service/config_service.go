@@ -111,7 +111,7 @@ func paginateGenericObjects(kind string) ([]v2client.GenericObject, error) {
 	return result, nil
 }
 
-func getGenericObjectById(kind string, id string) (v2client.GenericObject, error) {
+func getGenericObjectByID(kind string, id string) (v2client.GenericObject, error) {
 
 	rclient, err := getRancherClient()
 	if err != nil {

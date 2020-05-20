@@ -93,7 +93,7 @@ func (s *Server) deleteAlert(rw http.ResponseWriter, req *http.Request) (errCode
 
 	alert, err := service.GetAlert(id)
 	if err != nil {
-		logrus.Errorf("Error while getting alert", err)
+		logrus.Error("Error while getting alert", err)
 		return http.StatusBadRequest, err
 	}
 

@@ -30,7 +30,7 @@ func ListAlert(environment string) ([]*model.Alert, error) {
 }
 
 func GetAlert(id string) (*model.Alert, error) {
-	data, err := getGenericObjectById("alert", id)
+	data, err := getGenericObjectByID("alert", id)
 	if err != nil {
 		return nil, err
 	}
@@ -78,9 +78,9 @@ func DeleteAlert(id string) error {
 		return err
 	}
 
-	data, err := getGenericObjectById("alert", id)
+	data, err := getGenericObjectByID("alert", id)
 	if err != nil {
-		logrus.Errorf("Error while getting alert", err)
+		logrus.Error("Error while getting alert", err)
 		return err
 	}
 
@@ -104,7 +104,7 @@ func UpdateAlert(alert *model.Alert) error {
 		return err
 	}
 
-	alertGO, err := getGenericObjectById("alert", alert.Id)
+	alertGO, err := getGenericObjectByID("alert", alert.Id)
 	if err != nil {
 		return err
 	}

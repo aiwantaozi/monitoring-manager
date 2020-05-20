@@ -67,16 +67,16 @@ func alertSchema(alert *client.Schema) {
 	targetType.Options = []string{"host", "service", "stack", "metric"}
 	alert.ResourceFields["targetType"] = targetType
 
-	targetId := alert.ResourceFields["targetId"]
-	targetId.Create = true
-	targetId.Update = false
-	alert.ResourceFields["targetId"] = targetId
+	targetID := alert.ResourceFields["targetId"]
+	targetID.Create = true
+	targetID.Update = false
+	alert.ResourceFields["targetId"] = targetID
 
-	recipientId := alert.ResourceFields["recipientId"]
-	recipientId.Create = true
-	recipientId.Update = true
-	recipientId.Type = "reference[recipient]"
-	alert.ResourceFields["recipientId"] = recipientId
+	recipientID := alert.ResourceFields["recipientId"]
+	recipientID.Create = true
+	recipientID.Update = true
+	recipientID.Type = "reference[recipient]"
+	alert.ResourceFields["recipientId"] = recipientID
 
 	environment := alert.ResourceFields["environment"]
 	environment.Create = true

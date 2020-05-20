@@ -147,7 +147,7 @@ func run(c *cli.Context) error {
 
 	cancel()
 	if err := wg.Wait(); err != nil {
-		logrus.Errorf("msg", "Unhandled error received. Exiting: %v", err)
+		logrus.Error("msg", "Unhandled error received. Exiting: ", err.Error())
 		return err
 	}
 

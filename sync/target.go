@@ -184,5 +184,4 @@ func (s *prometheusTargetSynchronizer) Run(stopc <-chan struct{}) error {
 		}
 	}
 
-	return nil
 }

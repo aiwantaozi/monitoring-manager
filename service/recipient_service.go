@@ -37,7 +37,7 @@ func DeleteRecipient(id string) error {
 		return err
 	}
 
-	data, err := getGenericObjectById("recipient", id)
+	data, err := getGenericObjectByID("recipient", id)
 	if err != nil {
 		return err
 	}
@@ -50,7 +50,7 @@ func DeleteRecipient(id string) error {
 }
 
 func GetRecipient(id string) (*model.Recipient, error) {
-	data, err := getGenericObjectById("recipient", id)
+	data, err := getGenericObjectByID("recipient", id)
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +101,7 @@ func UpdateRecipient(recipient *model.Recipient) error {
 		return err
 	}
 
-	recipientGO, err := getGenericObjectById("recipient", recipient.Id)
+	recipientGO, err := getGenericObjectByID("recipient", recipient.Id)
 	if err != nil {
 		return err
 	}
