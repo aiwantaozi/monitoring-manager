@@ -20,6 +20,11 @@ const (
 	JobNameNodeExporter          = "NodeExporter"
 )
 
+const (
+	settingClcosRancherID          = "clcos.rancher.id"
+	settingClcosRancherDisplayName = "clcos.rancher.displayname"
+)
+
 type prometheusTargetSynchronizer struct {
 }
 
@@ -89,6 +94,17 @@ func (s *prometheusTargetSynchronizer) Run(stopc <-chan struct{}) error {
 				}
 			}
 
+			var clcosRancherID, clcosRancherDisplayName string
+			rancherIDSetting, err := rclient.Setting.ById(settingClcosRancherID)
+			if err == nil {
+				clcosRancherID = rancherIDSetting.Value
+			}
+
+			rancherDisplayNameSetting, err := rclient.Setting.ById(settingClcosRancherDisplayName)
+			if err == nil {
+				clcosRancherDisplayName = rancherDisplayNameSetting.Value
+			}
+
 			projects, err := rclient.Project.List(&client.ListOpts{})
 			if err != nil {
 				logrus.Errorf("Error while listing projects: %s", err)
@@ -123,13 +139,23 @@ func (s *prometheusTargetSynchronizer) Run(stopc <-chan struct{}) error {
 						})
 					}
 
+					labels := map[model.LabelName]model.LabelValue{
+						"environment_id":   model.LabelValue(project.Id),
+						"environment_name": model.LabelValue(project.Name),
+					}
+
+					if clcosRancherID != "" {
+						labels["rancher_id"] = model.LabelValue(clcosRancherID)
+					}
+
+					if clcosRancherDisplayName != "" {
+						labels["rancher_name"] = model.LabelValue(clcosRancherDisplayName)
+					}
+
 					staticConfig = &promconfig.TargetGroup{
 						Targets: targets,
-						Labels: map[model.LabelName]model.LabelValue{
-							"environment_id":   model.LabelValue(project.Id),
-							"environment_name": model.LabelValue(project.Name),
-						},
-						Source: project.Id,
+						Labels:  labels,
+						Source:  project.Id,
 					}
 
 					scrape.ServiceDiscoveryConfig.StaticConfigs = append(scrape.ServiceDiscoveryConfig.StaticConfigs, staticConfig)
@@ -160,4 +186,3 @@ func (s *prometheusTargetSynchronizer) Run(stopc <-chan struct{}) error {
 
 	return nil
 }
-
